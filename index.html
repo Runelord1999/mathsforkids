@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Practice Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EEF3F7;
+    --surface:#FFFFFF;
+    --ink:#1F2D3D;
+    --ink-soft:#5A6B7D;
+    --blue:#2F6FED;
+    --blue-dark:#1E52C2;
+    --orange:#FF8A3D;
+    --green:#2FA84F;
+    --green-soft:#E4F7EA;
+    --red:#E5484D;
+    --red-soft:#FDE8E8;
+    --yellow:#FFD447;
+    --line:#D9E2EA;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px;
+    color:var(--ink);
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+  }
+  .app{max-width:920px;margin:0 auto;padding:28px 20px 80px;}
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;flex-wrap:wrap;gap:12px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .mark{
+    width:46px;height:46px;border-radius:14px;background:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:22px;
+    transform:rotate(-6deg);
+    box-shadow:0 4px 0 var(--blue-dark);
+  }
+  .brand h1{font-family:'Baloo 2',sans-serif;font-size:22px;margin:0;font-weight:800;}
+  .brand p{margin:0;font-size:13px;color:var(--ink-soft);}
+  nav.tabs{display:flex;gap:8px;}
+  nav.tabs button{
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+    padding:10px 16px;border-radius:12px;border:2px solid transparent;
+    background:transparent;color:var(--ink-soft);cursor:pointer;
+  }
+  nav.tabs button.active{background:var(--surface);color:var(--blue);border-color:var(--line);box-shadow:0 2px 0 var(--line);}
+
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow:0 3px 0 var(--line), 0 10px 24px rgba(31,45,61,0.06);
+    margin-bottom:20px;
+  }
+  h2.section-title{
+    font-family:'Baloo 2',sans-serif;font-size:20px;margin:0 0 16px;font-weight:700;
+  }
+  label.field-label{display:block;font-weight:700;font-size:13px;color:var(--ink-soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+
+  .op-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+  .op-tile{
+    border:2px solid var(--line);background:var(--paper);
+    border-radius:16px;padding:18px 8px;text-align:center;cursor:pointer;
+    font-family:'Baloo 2',sans-serif;
+  }
+  .op-tile .sym{font-size:30px;font-weight:800;display:block;line-height:1;}
+  .op-tile .lbl{font-size:12px;font-weight:600;color:var(--ink-soft);font-family:'Nunito',sans-serif;}
+  .op-tile.active{
+    background:var(--blue);border-color:var(--blue-dark);color:#fff;
+    box-shadow:0 4px 0 var(--blue-dark);transform:translateY(-2px);
+  }
+  .op-tile.active .lbl{color:#DCE7FF;}
+
+  .row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:22px;}
+  .row .field{flex:1;min-width:200px;}
+  .pill-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .pill{
+    border:2px solid var(--line);background:var(--paper);border-radius:999px;
+    padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink);
+  }
+  .pill.active{background:var(--orange);border-color:#E06F1F;color:#fff;}
+  input[type=number], input[type=text]{
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:16px;
+    padding:11px 14px;border-radius:10px;border:2px solid var(--line);
+    width:100%;background:var(--paper);color:var(--ink);
+  }
+  input:focus{outline:3px solid #BFD4FF;border-color:var(--blue);}
+
+  .btn{
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px;
+    border:none;border-radius:14px;padding:14px 26px;cursor:pointer;color:#fff;
+    background:var(--blue);box-shadow:0 4px 0 var(--blue-dark);
+  }
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-dark);}
+  .btn.secondary{background:var(--surface);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);}
+  .btn.success{background:var(--green);box-shadow:0 4px 0 #1E7A38;}
+  .btn.small{font-size:14px;padding:9px 16px;border-radius:10px;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* Worksheet */
+  .worksheet-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;margin-bottom:18px;border-bottom:3px dashed var(--line);padding-bottom:16px;}
+  .worksheet-head h2{font-family:'Baloo 2',sans-serif;font-size:24px;margin:0;}
+  .worksheet-meta{display:flex;gap:24px;flex-wrap:wrap;font-size:14px;}
+  .worksheet-meta .fld{display:flex;flex-direction:column;gap:4px;}
+  .worksheet-meta .fld span{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-weight:700;}
+  .worksheet-meta input{border:none;border-bottom:2px solid var(--ink);border-radius:0;background:transparent;padding:2px 4px;width:170px;}
+
+  .q-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;}
+  .q-item{
+    display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;
+    border:2px solid var(--line);background:var(--paper);
+  }
+  .q-num{font-family:'Baloo 2',sans-serif;font-size:13px;color:var(--ink-soft);font-weight:700;min-width:22px;}
+  .q-expr{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:700;white-space:nowrap;}
+  .q-answer{
+    flex:1;font-family:'Baloo 2',sans-serif;font-size:26px;font-weight:700;
+    border:none;border-bottom:3px solid var(--ink);background:transparent;
+    padding:6px 4px;min-width:0;text-align:center;border-radius:0;
+  }
+  .q-answer:focus{outline:none;border-bottom-color:var(--blue);}
+  .q-item.correct{background:var(--green-soft);border-color:var(--green);}
+  .q-item.incorrect{background:var(--red-soft);border-color:var(--red);}
+  .q-item .mark{font-size:20px;min-width:22px;text-align:center;}
+
+  /* Stacked (column) format */
+  .q-grid.stacked{grid-template-columns:repeat(3,1fr);gap:16px 18px;}
+  .q-item-v{
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:7px;
+    height:225px;padding:18px 14px 16px;
+    border-radius:12px;border:2px solid var(--line);background:var(--paper);
+  }
+  .q-item-v .q-num{align-self:flex-start;}
+  .stack-wrap{width:100%;max-width:140px;}
+  .stack-row{
+    display:flex;justify-content:flex-end;align-items:baseline;gap:6px;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:24px;
+    font-variant-numeric:tabular-nums;letter-spacing:0.5px;line-height:1.3;
+  }
+  .stack-row .op{width:14px;text-align:left;color:var(--ink-soft);flex-shrink:0;}
+  .stack-row.top .op{visibility:hidden;}
+  .stack-rule{border-top:3px solid var(--ink);margin:7px 0 7px;width:100%;}
+  .q-item-v .q-answer{
+    text-align:right;font-size:24px;border-bottom:none;padding:2px 4px;
+    letter-spacing:0.5px;
+  }
+  .q-item-v .mark{align-self:flex-end;margin-top:3px;font-size:16px;}
+  .q-item-v.correct{background:var(--green-soft);border-color:var(--green);}
+  .q-item-v.incorrect{background:var(--red-soft);border-color:var(--red);}
+  @media (max-width:700px){
+    .q-grid.stacked{grid-template-columns:repeat(2,1fr);}
+  }
+
+  .actions-row{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center;}
+  .score-banner{
+    margin-top:20px;padding:18px 22px;border-radius:16px;font-family:'Baloo 2',sans-serif;
+    font-size:20px;font-weight:800;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  }
+  .score-banner.perfect{background:var(--yellow);color:#5A4300;}
+  .score-banner.good{background:var(--green-soft);color:#1E7A38;}
+  .score-banner.needswork{background:var(--red-soft);color:#B23237;}
+
+  /* Scoreboard */
+  table.board{width:100%;border-collapse:collapse;font-size:14px;}
+  table.board th{text-align:left;font-family:'Baloo 2',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);padding:8px 10px;border-bottom:2px solid var(--line);}
+  table.board td{padding:10px 10px;border-bottom:1px solid var(--line);font-weight:600;}
+  table.board tr:hover{background:var(--paper);cursor:pointer;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:800;font-size:12px;}
+  .badge.perfect{background:var(--yellow);color:#5A4300;}
+  .badge.good{background:var(--green-soft);color:#1E7A38;}
+  .badge.needswork{background:var(--red-soft);color:#B23237;}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--ink-soft);}
+  .empty-state .big{font-size:42px;display:block;margin-bottom:8px;}
+
+  /* Learn tab */
+  .learn-op-grid{grid-template-columns:repeat(2,1fr);max-width:360px;margin-bottom:0;}
+  .learn-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+  .learn-progress{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:26px;}
+  .step-dot{
+    width:32px;height:32px;border-radius:50%;border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;
+    cursor:pointer;color:var(--ink-soft);background:var(--paper);
+  }
+  .step-dot.active{background:var(--blue);border-color:var(--blue-dark);color:#fff;transform:scale(1.1);}
+  .step-dot.done{background:var(--green-soft);border-color:var(--green);color:#1E7A38;}
+  .learn-stage{text-align:center;padding:12px 6px 26px;}
+  .learn-caption{
+    font-family:'Baloo 2',sans-serif;font-size:17px;font-weight:700;
+    color:var(--ink-soft);margin-bottom:18px;
+  }
+  .dot-groups{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:26px;}
+  .dot-group{
+    border:2px dashed var(--line);border-radius:14px;padding:12px;
+    display:flex;flex-wrap:wrap;gap:8px;max-width:100%;
+    background:var(--paper);align-content:flex-start;justify-content:flex-start;
+  }
+  .dot-group.mul-group{border-color:#BFD4FF;background:#F3F7FF;}
+  .dot-group.div-group{border-color:#FFD9B8;background:#FFF6EE;}
+  .dot{
+    width:43px;height:43px;border-radius:50%;background:var(--blue);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Baloo 2',sans-serif;font-weight:800;font-size:20px;color:#fff;
+  }
+  .dot.div-dot{background:var(--orange);}
+  .learn-equation{font-family:'Baloo 2',sans-serif;font-size:72px;font-weight:800;color:var(--ink);line-height:1.1;word-break:break-word;}
+
+  .hidden{display:none !important;}
+
+  @media print{
+    @page{ size: A4; margin: 15mm; }
+    body{background:#fff;}
+    header.top, .actions-row, .score-banner, nav.tabs, .no-print{display:none !important;}
+    .card{box-shadow:none;border:none;padding:0;}
+    .app{padding:0;max-width:100%;}
+    .q-item, .q-item-v{break-inside:avoid;}
+    .q-answer{border-bottom:2px solid #000;}
+    #ws-name::placeholder{color:transparent;}
+  }
+  @media (max-width:600px){
+    .op-grid{grid-template-columns:repeat(2,1fr);}
+    .q-grid{grid-template-columns:1fr;}
+    .learn-equation{font-size:40px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top no-print">
+    <div class="brand">
+      <div class="mark">+</div>
+      <div>
+        <h1>Practice Sheets</h1>
+        <p>Make it. Print it. Mark it.</p>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button id="tab-setup" class="">Create</button>
+      <button id="tab-learn" class="active">Learn</button>
+      <button id="tab-board">Scoreboard</button>
+    </nav>
+  </header>
+
+  <!-- SETUP VIEW -->
+  <div id="view-setup" class="hidden">
+    <div class="card">
+      <h2 class="section-title">1. Pick an operation</h2>
+      <div class="op-grid" id="op-grid">
+        <div class="op-tile" data-op="add"><span class="sym">+</span><span class="lbl">Addition</span></div>
+        <div class="op-tile" data-op="sub"><span class="sym">−</span><span class="lbl">Subtraction</span></div>
+        <div class="op-tile active" data-op="mul"><span class="sym">×</span><span class="lbl">Multiplication</span></div>
+        <div class="op-tile" data-op="div"><span class="sym">÷</span><span class="lbl">Division</span></div>
+      </div>
+
+      <div class="row">
+        <div class="field" id="field-testnum">
+          <label class="field-label" id="testnum-label">Times table number</label>
+          <div class="pill-group" id="testnum-pills"><div class="pill" data-testnum="1">1</div><div class="pill" data-testnum="2">2</div><div class="pill active" data-testnum="3">3</div><div class="pill" data-testnum="4">4</div><div class="pill" data-testnum="5">5</div><div class="pill" data-testnum="6">6</div><div class="pill" data-testnum="7">7</div><div class="pill" data-testnum="8">8</div><div class="pill" data-testnum="9">9</div><div class="pill" data-testnum="10">10</div><div class="pill" data-testnum="11">11</div><div class="pill" data-testnum="12">12</div></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Number of questions</label>
+          <div class="pill-group" id="count-pills">
+            <div class="pill" data-count="5">5</div>
+            <div class="pill active" data-count="10">10</div>
+            <div class="pill" data-count="15">15</div>
+            <div class="pill" data-count="20">20</div>
+            <div class="pill" data-count="30">30</div>
+            <div class="pill" data-count="50">50</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label class="field-label">Display format</label>
+          <div class="pill-group" id="format-pills">
+            <div class="pill active" data-format="stacked">Stacked (column)</div>
+            <div class="pill" data-format="horizontal">Horizontal (inline)</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" id="btn-generate">Generate Worksheet</button>
+    </div>
+  </div>
+
+  <!-- WORKSHEET VIEW -->
+  <div id="view-worksheet" class="hidden">
+    <div class="card">
+      <div class="worksheet-head">
+        <h2 id="ws-title">Worksheet</h2>
+        <div class="worksheet-meta">
+          <div class="fld"><span>Name</span><input type="text" id="ws-name" placeholder="Kid&#39;s name"></div>
+          <div class="fld"><span>Date</span><input type="text" id="ws-date"></div>
+        </div>
+      </div>
+      <div class="q-grid" id="q-grid"></div>
+
+      <div class="actions-row no-print">
+        <button class="btn success" id="btn-check">Check Answers</button>
+        <button class="btn secondary" id="btn-print">Print Worksheet</button>
+        <button class="btn secondary" id="btn-new">New Worksheet</button>
+      </div>
+      <div id="score-banner-wrap"></div>
+    </div>
+  </div>
+
+  <!-- LEARN VIEW -->
+  <div id="view-learn" class="">
+    <div class="card hidden" id="learn-setup-card">
+      <h2 class="section-title">Pick what to teach</h2>
+      <div class="op-grid learn-op-grid" id="learn-op-grid">
+        <div class="op-tile active" data-op="mul"><span class="sym">×</span><span class="lbl">Multiplication</span></div>
+        <div class="op-tile" data-op="div"><span class="sym">÷</span><span class="lbl">Division</span></div>
+      </div>
+      <label class="field-label" style="margin-top:22px;">Number (2 – 12)</label>
+      <div class="pill-group" id="learn-number-pills"><div class="pill" data-num="2">2</div><div class="pill active" data-num="3">3</div><div class="pill" data-num="4">4</div><div class="pill" data-num="5">5</div><div class="pill" data-num="6">6</div><div class="pill" data-num="7">7</div><div class="pill" data-num="8">8</div><div class="pill" data-num="9">9</div><div class="pill" data-num="10">10</div><div class="pill" data-num="11">11</div><div class="pill" data-num="12">12</div></div>
+      <button class="btn" id="learn-start-btn" style="margin-top:26px;">Start Visual Lesson</button>
+    </div>
+
+    <div class="card" id="learn-stepper-card">
+      <div class="learn-header">
+        <h2 class="section-title" id="learn-title" style="margin:0;">3 Times Table</h2>
+        <button class="btn secondary small" id="learn-change-btn">Change</button>
+      </div>
+      <div class="learn-progress" id="learn-progress"><div class="step-dot done" data-step="1">1</div><div class="step-dot done" data-step="2">2</div><div class="step-dot done" data-step="3">3</div><div class="step-dot done" data-step="4">4</div><div class="step-dot done" data-step="5">5</div><div class="step-dot done" data-step="6">6</div><div class="step-dot done" data-step="7">7</div><div class="step-dot done" data-step="8">8</div><div class="step-dot done" data-step="9">9</div><div class="step-dot done" data-step="10">10</div><div class="step-dot done" data-step="11">11</div><div class="step-dot active" data-step="12">12</div></div>
+
+      <div class="learn-stage">
+        <div class="learn-caption" id="learn-caption">3 groups of 12</div>
+        <div class="dot-groups" id="learn-dots"><div class="dot-group mul-group"><span class="dot">1</span><span class="dot">2</span><span class="dot">3</span><span class="dot">4</span><span class="dot">5</span><span class="dot">6</span><span class="dot">7</span><span class="dot">8</span><span class="dot">9</span><span class="dot">10</span><span class="dot">11</span><span class="dot">12</span></div><div class="dot-group mul-group"><span class="dot">13</span><span class="dot">14</span><span class="dot">15</span><span class="dot">16</span><span class="dot">17</span><span class="dot">18</span><span class="dot">19</span><span class="dot">20</span><span class="dot">21</span><span class="dot">22</span><span class="dot">23</span><span class="dot">24</span></div><div class="dot-group mul-group"><span class="dot">25</span><span class="dot">26</span><span class="dot">27</span><span class="dot">28</span><span class="dot">29</span><span class="dot">30</span><span class="dot">31</span><span class="dot">32</span><span class="dot">33</span><span class="dot">34</span><span class="dot">35</span><span class="dot">36</span></div></div>
+        <div class="learn-equation" id="learn-equation">3 × 12 = 36</div>
+      </div>
+
+      <div class="actions-row" style="justify-content:center;">
+        <button class="btn secondary" id="learn-prev">← Previous</button>
+        <button class="btn" id="learn-next" disabled="">Next →</button>
+      </div>
+      <div class="actions-row" style="justify-content:center;margin-top:4px;">
+        <button class="btn secondary small" id="learn-to-practice">Generate a worksheet for this number</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCOREBOARD VIEW -->
+  <div id="view-board" class="hidden">
+    <div class="card">
+      <h2 class="section-title">Scoreboard</h2>
+      <div id="board-wrap"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Local-storage-backed replacement for the window.storage API this file
+// was originally authored against, so scoreboard persistence works when
+// hosted as a plain static site (no backend).
+(function(){
+  if (window.storage) return;
+  const PREFIX = 'mathsforkids:';
+  window.storage = {
+    async get(key){
+      const raw = localStorage.getItem(PREFIX + key);
+      return raw === null ? null : { value: raw };
+    },
+    async set(key, value){
+      localStorage.setItem(PREFIX + key, value);
+      return true;
+    },
+    async delete(key){
+      localStorage.removeItem(PREFIX + key);
+      return true;
+    }
+  };
+})();
+</script>
+<script>
+const OP_META = {
+  add: {symbol:'+', name:'Addition', numLabel:'Numbers up to'},
+  sub: {symbol:'−', name:'Subtraction', numLabel:'Numbers up to'},
+  mul: {symbol:'×', name:'Multiplication', numLabel:'Times table number'},
+  div: {symbol:'÷', name:'Division', numLabel:'Divide-by number'}
+};
+
+let state = {
+  op: 'add',
+  testNumber: 7,
+  count: 10,
+  questions: [],
+  graded: false,
+  format: 'stacked'
+};
+
+// ---------- Operation tiles ----------
+document.querySelectorAll('.op-tile').forEach(tile=>{
+  tile.addEventListener('click', ()=>{
+    document.querySelectorAll('.op-tile').forEach(t=>t.classList.remove('active'));
+    tile.classList.add('active');
+    state.op = tile.dataset.op;
+    renderTestNumberField();
+  });
+});
+
+function renderTestNumberField(){
+  const meta = OP_META[state.op];
+  const field = document.getElementById('field-testnum');
+  const label = document.getElementById('testnum-label');
+  const pillsWrap = document.getElementById('testnum-pills');
+  label.textContent = meta.numLabel;
+
+  if(state.op === 'add' || state.op === 'sub'){
+    const opts = [10,20,50,100,1000,10000];
+    pillsWrap.innerHTML = opts.map((n,i)=>
+      `<div class="pill ${i===0?'active':''}" data-testnum="${n}">${n.toLocaleString()}</div>`).join('');
+    state.testNumber = opts[0];
+    field.classList.remove('hidden');
+  } else {
+    const opts = Array.from({length:12},(_,i)=>i+1);
+    pillsWrap.innerHTML = opts.map(n=>
+      `<div class="pill ${n===7?'active':''}" data-testnum="${n}">${n}</div>`).join('');
+    state.testNumber = 7;
+    field.classList.remove('hidden');
+  }
+  pillsWrap.querySelectorAll('.pill').forEach(p=>{
+    p.addEventListener('click', ()=>{
+      pillsWrap.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      state.testNumber = parseInt(p.dataset.testnum,10);
+    });
+  });
+}
+renderTestNumberField();
+
+document.getElementById('count-pills').querySelectorAll('.pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    document.querySelectorAll('#count-pills .pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    state.count = parseInt(p.dataset.count,10);
+  });
+});
+
+// ---------- Question generation ----------
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+function generateQuestions(){
+  const qs = [];
+  const seen = new Set();
+  let guard = 0;
+  while(qs.length < state.count && guard < state.count*30){
+    guard++;
+    let a,b,answer,key;
+    if(state.op === 'add'){
+      a = randInt(1, state.testNumber);
+      b = randInt(1, state.testNumber);
+      answer = a+b;
+      key = `${a}+${b}`;
+    } else if(state.op === 'sub'){
+      a = randInt(2, state.testNumber < 2 ? 2 : state.testNumber);
+      b = randInt(1, a-1);
+      answer = a-b;
+      key = `${a}-${b}`;
+    } else if(state.op === 'mul'){
+      a = state.testNumber;
+      b = randInt(1,12);
+      answer = a*b;
+      key = `${a}x${b}`;
+    } else {
+      b = state.testNumber;
+      const q = randInt(1,12);
+      a = b*q;
+      answer = q;
+      key = `${a}div${b}`;
+    }
+    if(seen.has(key) && state.count <= 12) continue; // avoid dup only when pool small
+    seen.add(key);
+    qs.push({a,b,answer});
+  }
+  return qs;
+}
+
+// ---------- Generate button ----------
+document.getElementById('btn-generate').addEventListener('click', ()=>{
+  state.questions = generateQuestions();
+  state.graded = false;
+  renderWorksheet();
+  showView('worksheet');
+});
+
+function questionHtml(q, i, sym){
+  if(state.format === 'stacked'){
+    return `<div class="q-item-v" data-idx="${i}">
+      <span class="q-num">${i+1}.</span>
+      <div class="stack-wrap">
+        <div class="stack-row top"><span class="op"></span><span>${q.a}</span></div>
+        <div class="stack-row bottom"><span class="op">${sym}</span><span>${q.b}</span></div>
+        <div class="stack-rule"></div>
+        <input class="q-answer" type="text" inputmode="numeric" autocomplete="off" data-idx="${i}">
+      </div>
+      <span class="mark"></span>
+    </div>`;
+  }
+  const expr = `${q.a} ${sym} ${q.b}`;
+  return `<div class="q-item" data-idx="${i}">
+    <span class="q-num">${i+1}.</span>
+    <span class="q-expr">${expr} =</span>
+    <input class="q-answer" type="text" inputmode="numeric" autocomplete="off" data-idx="${i}">
+    <span class="mark"></span>
+  </div>`;
+}
+
+function renderWorksheet(){
+  const meta = OP_META[state.op];
+  const titleText = `${meta.name} Practice — ${meta.symbol}${state.op==='mul'||state.op==='div' ? state.testNumber : ''}`;
+  document.getElementById('ws-title').textContent = titleText;
+  const today = new Date();
+  document.getElementById('ws-date').value = today.toLocaleDateString();
+  document.getElementById('ws-name').value = '';
+
+  const opSymbols = {add:'+', sub:'−', mul:'×', div:'÷'};
+  const sym = opSymbols[state.op];
+
+  const grid = document.getElementById('q-grid');
+  grid.classList.toggle('stacked', state.format === 'stacked');
+  grid.innerHTML = state.questions.map((q,i)=> questionHtml(q, i, sym)).join('');
+  document.getElementById('score-banner-wrap').innerHTML = '';
+}
+
+function showView(name){
+  document.getElementById('view-setup').classList.toggle('hidden', name!=='setup');
+  document.getElementById('view-worksheet').classList.toggle('hidden', name!=='worksheet');
+  document.getElementById('view-learn').classList.toggle('hidden', name!=='learn');
+  document.getElementById('view-board').classList.toggle('hidden', name!=='board');
+  document.getElementById('tab-setup').classList.toggle('active', name==='setup');
+  document.getElementById('tab-learn').classList.toggle('active', name==='learn');
+  document.getElementById('tab-board').classList.toggle('active', name==='board');
+}
+document.getElementById('tab-setup').addEventListener('click', ()=>showView('setup'));
+document.getElementById('tab-learn').addEventListener('click', ()=>showView('learn'));
+document.getElementById('tab-board').addEventListener('click', ()=>{ showView('board'); renderBoard(); });
+document.getElementById('btn-new').addEventListener('click', ()=>showView('setup'));
+document.getElementById('btn-print').addEventListener('click', ()=>window.print());
+
+document.getElementById('format-pills').querySelectorAll('.pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    document.querySelectorAll('#format-pills .pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    state.format = p.dataset.format;
+  });
+});
+
+// ---------- Check answers ----------
+document.getElementById('btn-check').addEventListener('click', async ()=>{
+  let correctCount = 0;
+  const answers = [];
+  state.questions.forEach((q,i)=>{
+    const item = document.querySelector(`.q-item[data-idx="${i}"], .q-item-v[data-idx="${i}"]`);
+    const input = item.querySelector('.q-answer');
+    const mark = item.querySelector('.mark');
+    const val = input.value.trim();
+    const isCorrect = val !== '' && parseInt(val,10) === q.answer;
+    item.classList.remove('correct','incorrect');
+    item.classList.add(isCorrect ? 'correct' : 'incorrect');
+    mark.textContent = isCorrect ? '✅' : '❌';
+    input.disabled = true;
+    if(isCorrect) correctCount++;
+    answers.push({given: val, correct: q.answer, isCorrect});
+  });
+
+  const total = state.questions.length;
+  const pct = Math.round((correctCount/total)*100);
+  const meta = OP_META[state.op];
+  let bannerClass = pct===100 ? 'perfect' : (pct>=70 ? 'good' : 'needswork');
+  let msg = pct===100 ? '🌟 Perfect score!' : (pct>=70 ? 'Nice work!' : 'Keep practicing!');
+  document.getElementById('score-banner-wrap').innerHTML =
+    `<div class="score-banner ${bannerClass}"><span>${msg}</span><span>${correctCount} / ${total} correct — ${pct}%</span></div>`;
+
+  state.graded = true;
+
+  // save attempt to storage
+  const record = {
+    id: 'attempt_' + Date.now(),
+    date: new Date().toISOString(),
+    name: document.getElementById('ws-name').value || 'Unnamed',
+    op: state.op,
+    opName: meta.name,
+    testNumber: state.testNumber,
+    total,
+    correctCount,
+    pct,
+    questions: state.questions,
+    answers
+  };
+  try{
+    await window.storage.set(record.id, JSON.stringify(record), false);
+    const idxResult = await safeGet('attempt-index');
+    const idx = idxResult ? JSON.parse(idxResult.value) : [];
+    idx.unshift(record.id);
+    await window.storage.set('attempt-index', JSON.stringify(idx), false);
+  }catch(e){
+    console.error('Could not save attempt', e);
+  }
+});
+
+async function safeGet(key, shared=false){
+  try{
+    return await window.storage.get(key, shared);
+  }catch(e){
+    return null;
+  }
+}
+
+// ---------- Scoreboard ----------
+async function renderBoard(){
+  const wrap = document.getElementById('board-wrap');
+  wrap.innerHTML = '<p>Loading...</p>';
+  try{
+    const idxResult = await safeGet('attempt-index');
+    const idx = idxResult ? JSON.parse(idxResult.value) : [];
+    if(idx.length === 0){
+      wrap.innerHTML = `<div class="empty-state"><span class="big">📝</span>No worksheets marked yet. Generate one and hit "Check Answers" to see it here.</div>`;
+      return;
+    }
+    const records = [];
+    for(const id of idx){
+      const r = await safeGet(id);
+      if(r) records.push(JSON.parse(r.value));
+    }
+    records.sort((a,b)=> new Date(b.date) - new Date(a.date));
+
+    const rows = records.map(r=>{
+      const badgeClass = r.pct===100 ? 'perfect' : (r.pct>=70 ? 'good' : 'needswork');
+      const opSym = OP_META[r.op].symbol;
+      const d = new Date(r.date);
+      return `<tr>
+        <td>${d.toLocaleDateString()}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${OP_META[r.op].name} ${opSym}${r.testNumber}</td>
+        <td>${r.total}</td>
+        <td><span class="badge ${badgeClass}">${r.correctCount}/${r.total} — ${r.pct}%</span></td>
+      </tr>`;
+    }).join('');
+
+    wrap.innerHTML = `<table class="board">
+      <thead><tr><th>Date</th><th>Name</th><th>Exercise</th><th>Qs</th><th>Score</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="actions-row no-print" style="margin-top:18px;">
+      <button class="btn secondary small" id="btn-clear-board">Clear all history</button>
+    </div>`;
+
+    document.getElementById('btn-clear-board').addEventListener('click', async ()=>{
+      if(!confirm('Delete all saved worksheets and scores? This cannot be undone.')) return;
+      for(const id of idx){ try{ await window.storage.delete(id,false); }catch(e){} }
+      try{ await window.storage.delete('attempt-index', false); }catch(e){}
+      renderBoard();
+    });
+  }catch(e){
+    wrap.innerHTML = '<p>Could not load scoreboard.</p>';
+    console.error(e);
+  }
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+// ---------- Learn tab ----------
+let learnState = { op: 'mul', number: 7, step: 1 };
+
+function initLearnSetup(){
+  const pillsWrap = document.getElementById('learn-number-pills');
+  const nums = Array.from({length:11}, (_,i)=>i+2); // 2..12
+  pillsWrap.innerHTML = nums.map(n=>
+    `<div class="pill ${n===7?'active':''}" data-num="${n}">${n}</div>`).join('');
+  pillsWrap.querySelectorAll('.pill').forEach(p=>{
+    p.addEventListener('click', ()=>{
+      pillsWrap.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      learnState.number = parseInt(p.dataset.num, 10);
+    });
+  });
+  document.querySelectorAll('#learn-op-grid .op-tile').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('#learn-op-grid .op-tile').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      learnState.op = t.dataset.op;
+    });
+  });
+}
+initLearnSetup();
+
+document.getElementById('learn-start-btn').addEventListener('click', ()=>{
+  learnState.step = 1;
+  document.getElementById('learn-setup-card').classList.add('hidden');
+  document.getElementById('learn-stepper-card').classList.remove('hidden');
+  renderLearnStep();
+});
+
+document.getElementById('learn-change-btn').addEventListener('click', ()=>{
+  document.getElementById('learn-stepper-card').classList.add('hidden');
+  document.getElementById('learn-setup-card').classList.remove('hidden');
+});
+
+function renderGroups(groupCount, dotsPerGroup, isDiv){
+  let counter = 0;
+  let html = '';
+  for(let g = 0; g < groupCount; g++){
+    html += `<div class="dot-group ${isDiv ? 'div-group' : 'mul-group'}">`;
+    for(let d = 0; d < dotsPerGroup; d++){
+      counter++;
+      html += `<span class="dot${isDiv ? ' div-dot' : ''}">${counter}</span>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+function renderLearnStep(){
+  const n = learnState.number;
+  const k = learnState.step;
+  const isMul = learnState.op === 'mul';
+
+  document.getElementById('learn-title').textContent = isMul ? `${n} Times Table` : `Dividing by ${n}`;
+
+  const prog = document.getElementById('learn-progress');
+  prog.innerHTML = Array.from({length:12}, (_,i)=>i+1).map(s=>
+    `<div class="step-dot ${s===k?'active':(s<k?'done':'')}" data-step="${s}">${s}</div>`).join('');
+  prog.querySelectorAll('.step-dot').forEach(d=>{
+    d.addEventListener('click', ()=>{
+      learnState.step = parseInt(d.dataset.step, 10);
+      renderLearnStep();
+    });
+  });
+
+  const dotsWrap = document.getElementById('learn-dots');
+  const caption = document.getElementById('learn-caption');
+  const eq = document.getElementById('learn-equation');
+
+  if(isMul){
+    const product = n * k;
+    caption.textContent = `${n} group${n>1?'s':''} of ${k}`;
+    dotsWrap.innerHTML = renderGroups(n, k, false);
+    eq.textContent = `${n} × ${k} = ${product}`;
+  } else {
+    const dividend = n * k;
+    caption.textContent = `${dividend} shared into ${n} equal group${n>1?'s':''}`;
+    dotsWrap.innerHTML = renderGroups(n, k, true);
+    eq.textContent = `${dividend} ÷ ${n} = ${k}`;
+  }
+
+  document.getElementById('learn-prev').disabled = (k === 1);
+  document.getElementById('learn-next').disabled = (k === 12);
+}
+
+document.getElementById('learn-prev').addEventListener('click', ()=>{
+  if(learnState.step > 1){ learnState.step--; renderLearnStep(); }
+});
+document.getElementById('learn-next').addEventListener('click', ()=>{
+  if(learnState.step < 12){ learnState.step++; renderLearnStep(); }
+});
+
+document.getElementById('learn-to-practice').addEventListener('click', ()=>{
+  // Bridge into the Create tab, pre-filled with this Learn session's operation and number
+  document.querySelectorAll('#op-grid .op-tile').forEach(t=>{
+    t.classList.toggle('active', t.dataset.op === learnState.op);
+  });
+  state.op = learnState.op;
+  renderTestNumberField();
+  const targetPill = document.querySelector(`#testnum-pills .pill[data-testnum="${learnState.number}"]`);
+  if(targetPill){
+    document.querySelectorAll('#testnum-pills .pill').forEach(p=>p.classList.remove('active'));
+    targetPill.classList.add('active');
+    state.testNumber = learnState.number;
+  }
+  showView('setup');
+});
+</script>
+
+
+</body></html>
