@@ -501,11 +501,17 @@ document.getElementById('btn-generate').addEventListener('click', ()=>{
 
 function questionHtml(q, i, sym){
   if(state.format === 'stacked'){
+    // Addition/multiplication are commutative, so show the larger operand on
+    // top regardless of a/b order. Subtraction/division already require a on
+    // top (minuend/dividend), and a is always >= b there by construction.
+    const commutative = state.op === 'add' || state.op === 'mul';
+    const top = commutative ? Math.max(q.a, q.b) : q.a;
+    const bottom = commutative ? Math.min(q.a, q.b) : q.b;
     return `<div class="q-item-v" data-idx="${i}">
       <span class="q-num">${i+1}.</span>
       <div class="stack-wrap">
-        <div class="stack-row top"><span class="op"></span><span>${q.a}</span></div>
-        <div class="stack-row bottom"><span class="op">${sym}</span><span>${q.b}</span></div>
+        <div class="stack-row top"><span class="op"></span><span>${top}</span></div>
+        <div class="stack-row bottom"><span class="op">${sym}</span><span>${bottom}</span></div>
         <div class="stack-rule"></div>
         <input class="q-answer" type="text" inputmode="numeric" autocomplete="off" data-idx="${i}">
       </div>
