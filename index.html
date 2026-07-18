@@ -334,14 +334,17 @@
     <div class="card" id="learn-stepper-card">
       <div class="learn-header">
         <h2 class="section-title" id="learn-title" style="margin:0;">3 Times Table</h2>
-        <button class="btn secondary small" id="learn-change-btn">Change</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn secondary small" id="learn-toggle-answer">Show Answer</button>
+          <button class="btn secondary small" id="learn-change-btn">Change</button>
+        </div>
       </div>
       <div class="learn-progress" id="learn-progress"><div class="step-dot done" data-step="1">1</div><div class="step-dot done" data-step="2">2</div><div class="step-dot done" data-step="3">3</div><div class="step-dot done" data-step="4">4</div><div class="step-dot done" data-step="5">5</div><div class="step-dot done" data-step="6">6</div><div class="step-dot done" data-step="7">7</div><div class="step-dot done" data-step="8">8</div><div class="step-dot done" data-step="9">9</div><div class="step-dot done" data-step="10">10</div><div class="step-dot done" data-step="11">11</div><div class="step-dot active" data-step="12">12</div></div>
 
       <div class="learn-stage">
         <div class="learn-caption" id="learn-caption">3 groups of 12</div>
-        <div class="dot-groups" id="learn-dots"><div class="dot-group mul-group"><span class="dot">1</span><span class="dot">2</span><span class="dot">3</span><span class="dot">4</span><span class="dot">5</span><span class="dot">6</span><span class="dot">7</span><span class="dot">8</span><span class="dot">9</span><span class="dot">10</span><span class="dot">11</span><span class="dot">12</span></div><div class="dot-group mul-group"><span class="dot">13</span><span class="dot">14</span><span class="dot">15</span><span class="dot">16</span><span class="dot">17</span><span class="dot">18</span><span class="dot">19</span><span class="dot">20</span><span class="dot">21</span><span class="dot">22</span><span class="dot">23</span><span class="dot">24</span></div><div class="dot-group mul-group"><span class="dot">25</span><span class="dot">26</span><span class="dot">27</span><span class="dot">28</span><span class="dot">29</span><span class="dot">30</span><span class="dot">31</span><span class="dot">32</span><span class="dot">33</span><span class="dot">34</span><span class="dot">35</span><span class="dot">36</span></div></div>
-        <div class="learn-equation" id="learn-equation">3 × 12 = 36</div>
+        <div class="dot-groups" id="learn-dots"><div class="dot-group mul-group"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="dot-group mul-group"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="dot-group mul-group"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+        <div class="learn-equation" id="learn-equation">3 × 12 = ?</div>
       </div>
 
       <div class="actions-row" style="justify-content:center;">
@@ -685,7 +688,7 @@ function escapeHtml(s){
   return d.innerHTML;
 }
 // ---------- Learn tab ----------
-let learnState = { op: 'mul', number: 7, step: 1 };
+let learnState = { op: 'mul', number: 7, step: 1, showAnswer: false };
 
 function initLearnSetup(){
   const pillsWrap = document.getElementById('learn-number-pills');
@@ -711,8 +714,14 @@ initLearnSetup();
 
 document.getElementById('learn-start-btn').addEventListener('click', ()=>{
   learnState.step = 1;
+  learnState.showAnswer = false;
   document.getElementById('learn-setup-card').classList.add('hidden');
   document.getElementById('learn-stepper-card').classList.remove('hidden');
+  renderLearnStep();
+});
+
+document.getElementById('learn-toggle-answer').addEventListener('click', ()=>{
+  learnState.showAnswer = !learnState.showAnswer;
   renderLearnStep();
 });
 
@@ -721,14 +730,14 @@ document.getElementById('learn-change-btn').addEventListener('click', ()=>{
   document.getElementById('learn-setup-card').classList.remove('hidden');
 });
 
-function renderGroups(groupCount, dotsPerGroup, isDiv){
+function renderGroups(groupCount, dotsPerGroup, isDiv, showNumbers){
   let counter = 0;
   let html = '';
   for(let g = 0; g < groupCount; g++){
     html += `<div class="dot-group ${isDiv ? 'div-group' : 'mul-group'}">`;
     for(let d = 0; d < dotsPerGroup; d++){
       counter++;
-      html += `<span class="dot${isDiv ? ' div-dot' : ''}">${counter}</span>`;
+      html += `<span class="dot${isDiv ? ' div-dot' : ''}">${showNumbers ? counter : ''}</span>`;
     }
     html += `</div>`;
   }
@@ -748,6 +757,7 @@ function renderLearnStep(){
   prog.querySelectorAll('.step-dot').forEach(d=>{
     d.addEventListener('click', ()=>{
       learnState.step = parseInt(d.dataset.step, 10);
+      learnState.showAnswer = false;
       renderLearnStep();
     });
   });
@@ -755,28 +765,33 @@ function renderLearnStep(){
   const dotsWrap = document.getElementById('learn-dots');
   const caption = document.getElementById('learn-caption');
   const eq = document.getElementById('learn-equation');
+  const showAnswer = learnState.showAnswer;
 
   if(isMul){
     const product = n * k;
     caption.textContent = `${n} group${n>1?'s':''} of ${k}`;
-    dotsWrap.innerHTML = renderGroups(n, k, false);
-    eq.textContent = `${n} × ${k} = ${product}`;
+    dotsWrap.innerHTML = renderGroups(n, k, false, showAnswer);
+    eq.textContent = `${n} × ${k} = ${showAnswer ? product : '?'}`;
   } else {
     const dividend = n * k;
     caption.textContent = `${dividend} shared into ${n} equal group${n>1?'s':''}`;
-    dotsWrap.innerHTML = renderGroups(n, k, true);
-    eq.textContent = `${dividend} ÷ ${n} = ${k}`;
+    dotsWrap.innerHTML = renderGroups(n, k, true, showAnswer);
+    eq.textContent = `${dividend} ÷ ${n} = ${showAnswer ? k : '?'}`;
   }
+
+  const toggleBtn = document.getElementById('learn-toggle-answer');
+  toggleBtn.textContent = showAnswer ? 'Hide Answer' : 'Show Answer';
+  toggleBtn.classList.toggle('success', showAnswer);
 
   document.getElementById('learn-prev').disabled = (k === 1);
   document.getElementById('learn-next').disabled = (k === 12);
 }
 
 document.getElementById('learn-prev').addEventListener('click', ()=>{
-  if(learnState.step > 1){ learnState.step--; renderLearnStep(); }
+  if(learnState.step > 1){ learnState.step--; learnState.showAnswer = false; renderLearnStep(); }
 });
 document.getElementById('learn-next').addEventListener('click', ()=>{
-  if(learnState.step < 12){ learnState.step++; renderLearnStep(); }
+  if(learnState.step < 12){ learnState.step++; learnState.showAnswer = false; renderLearnStep(); }
 });
 
 document.getElementById('learn-to-practice').addEventListener('click', ()=>{
