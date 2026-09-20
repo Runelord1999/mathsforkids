@@ -552,7 +552,8 @@ function generateQuestions(){
 // Shrink text as the page gets denser (stacked packs more columns than inline)
 function layoutScale(cols, rows, format){
   const colBase = format === 'stacked' ? 3.2 : 2.1;
-  return Math.min(1, colBase/cols, 4.6/rows);
+  const rowBase = format === 'stacked' ? 3.7 : 4.6; // stacked cells are taller
+  return Math.min(1, colBase/cols, rowBase/rows);
 }
 
 // ---------- Generate button ----------
