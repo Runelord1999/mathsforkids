@@ -118,49 +118,54 @@
   .worksheet-meta .fld span{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-weight:700;}
   .worksheet-meta input{border:none;border-bottom:2px solid var(--ink);border-radius:0;background:transparent;padding:2px 4px;width:170px;}
 
-  .q-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;}
+  /* --s scales fonts/spacing down as the grid gets denser; --cols/--rows are set from JS */
+  .q-grid{--s:1;--cols:2;--rows:5;display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:calc(18px*var(--s)) calc(24px*var(--s));}
   .q-item{
-    display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;
-    border:2px solid var(--line);background:var(--paper);
+    display:flex;align-items:center;gap:calc(14px*var(--s));padding:calc(16px*var(--s)) calc(14px*var(--s));border-radius:14px;
+    border:2px solid var(--line);background:var(--paper);min-width:0;
   }
-  .q-num{font-family:'Baloo 2',sans-serif;font-size:13px;color:var(--ink-soft);font-weight:700;min-width:22px;}
-  .q-expr{font-family:'Baloo 2',sans-serif;font-size:30px;font-weight:700;white-space:nowrap;}
+  .q-num{font-family:'Baloo 2',sans-serif;font-size:max(9px,calc(13px*var(--s)));color:var(--ink-soft);font-weight:700;min-width:calc(22px*var(--s));}
+  .q-expr{font-family:'Baloo 2',sans-serif;font-size:calc(30px*var(--s));font-weight:700;white-space:nowrap;}
   .q-answer{
-    flex:1;font-family:'Baloo 2',sans-serif;font-size:26px;font-weight:700;
-    border:none;border-bottom:3px solid var(--ink);background:transparent;
-    padding:6px 4px;min-width:0;text-align:center;border-radius:0;
+    flex:1;font-family:'Baloo 2',sans-serif;font-size:calc(26px*var(--s));font-weight:700;
+    border:none;border-bottom:max(1.5px,calc(3px*var(--s))) solid var(--ink);background:transparent;
+    padding:calc(6px*var(--s)) 4px;min-width:0;text-align:center;border-radius:0;
   }
   .q-answer:focus{outline:none;border-bottom-color:var(--blue);}
   .q-item.correct{background:var(--green-soft);border-color:var(--green);}
   .q-item.incorrect{background:var(--red-soft);border-color:var(--red);}
-  .q-item .mark{font-size:20px;min-width:22px;text-align:center;}
+  .q-item .mark{font-size:calc(20px*var(--s));min-width:calc(22px*var(--s));text-align:center;}
 
   /* Stacked (column) format */
-  .q-grid.stacked{grid-template-columns:repeat(3,1fr);gap:16px 18px;}
+  .q-grid.stacked{gap:calc(16px*var(--s)) calc(18px*var(--s));}
   .q-item-v{
-    display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:7px;
-    height:225px;padding:18px 14px 16px;
-    border-radius:12px;border:2px solid var(--line);background:var(--paper);
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:calc(7px*var(--s));
+    height:calc(225px*var(--s));padding:calc(18px*var(--s)) calc(14px*var(--s)) calc(16px*var(--s));
+    border-radius:12px;border:2px solid var(--line);background:var(--paper);min-width:0;
   }
   .q-item-v .q-num{align-self:flex-start;}
-  .stack-wrap{width:100%;max-width:140px;}
+  .stack-wrap{width:100%;max-width:calc(140px*var(--s));}
   .stack-row{
-    display:flex;justify-content:flex-end;align-items:baseline;gap:6px;
-    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:24px;
+    display:flex;justify-content:flex-end;align-items:baseline;gap:calc(6px*var(--s));
+    font-family:'Baloo 2',sans-serif;font-weight:700;font-size:calc(24px*var(--s));
     font-variant-numeric:tabular-nums;letter-spacing:0.5px;line-height:1.3;
   }
-  .stack-row .op{width:14px;text-align:left;color:var(--ink-soft);flex-shrink:0;}
+  .stack-row .op{width:calc(14px*var(--s));text-align:left;color:var(--ink-soft);flex-shrink:0;}
   .stack-row.top .op{visibility:hidden;}
-  .stack-rule{border-top:3px solid var(--ink);margin:7px 0 7px;width:100%;}
+  .stack-rule{border-top:max(1.5px,calc(3px*var(--s))) solid var(--ink);margin:calc(7px*var(--s)) 0;width:100%;}
   .q-item-v .q-answer{
-    text-align:right;font-size:24px;border-bottom:none;padding:2px 4px;
+    width:100%;text-align:right;font-size:calc(24px*var(--s));border-bottom:none;padding:2px 4px;
     letter-spacing:0.5px;
   }
-  .q-item-v .mark{align-self:flex-end;margin-top:3px;font-size:16px;}
+  .q-item-v .mark{align-self:flex-end;margin-top:3px;font-size:max(10px,calc(16px*var(--s)));}
   .q-item-v.correct{background:var(--green-soft);border-color:var(--green);}
   .q-item-v.incorrect{background:var(--red-soft);border-color:var(--red);}
-  @media (max-width:700px){
-    .q-grid.stacked{grid-template-columns:repeat(2,1fr);}
+  .grid-hint{font-size:12px;color:var(--ink-soft);margin-top:8px;font-weight:600;}
+  @media screen and (max-width:700px){
+    .q-grid{--s:1 !important;grid-template-columns:repeat(2,1fr) !important;}
+  }
+  @media screen and (max-width:600px){
+    .q-grid:not(.stacked){grid-template-columns:1fr !important;}
   }
 
   .actions-row{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;align-items:center;}
@@ -220,18 +225,21 @@
   .hidden{display:none !important;}
 
   @media print{
-    @page{ size: A4; margin: 15mm; }
-    body{background:#fff;}
+    @page{ size: A4; margin: 10mm; }
+    body{background:#fff;min-height:0;}
     header.top, .actions-row, .score-banner, nav.tabs, .no-print{display:none !important;}
-    .card{box-shadow:none;border:none;padding:0;}
+    .card{box-shadow:none;border:none;padding:0;margin:0;}
     .app{padding:0;max-width:100%;}
-    .q-item, .q-item-v{break-inside:avoid;}
+    .worksheet-head{margin-bottom:4mm;padding-bottom:3mm;}
+    /* Fill one A4 page: rows share the remaining height equally */
+    .q-grid{height:238mm;grid-template-rows:repeat(var(--rows),minmax(0,1fr));}
+    .q-item, .q-item-v{break-inside:avoid;height:auto;min-height:0;overflow:hidden;}
+    .q-item-v{justify-content:center;}
     .q-answer{border-bottom:2px solid #000;}
     #ws-name::placeholder{color:transparent;}
   }
   @media (max-width:600px){
     .op-grid{grid-template-columns:repeat(2,1fr);}
-    .q-grid{grid-template-columns:1fr;}
     .learn-equation{font-size:40px;}
   }
 </style>
@@ -267,19 +275,16 @@
 
       <div class="row">
         <div class="field" id="field-testnum">
-          <label class="field-label" id="testnum-label">Times table number</label>
-          <div class="pill-group" id="testnum-pills"><div class="pill" data-testnum="1">1</div><div class="pill" data-testnum="2">2</div><div class="pill active" data-testnum="3">3</div><div class="pill" data-testnum="4">4</div><div class="pill" data-testnum="5">5</div><div class="pill" data-testnum="6">6</div><div class="pill" data-testnum="7">7</div><div class="pill" data-testnum="8">8</div><div class="pill" data-testnum="9">9</div><div class="pill" data-testnum="10">10</div><div class="pill" data-testnum="11">11</div><div class="pill" data-testnum="12">12</div></div>
+          <label class="field-label" id="testnum-label">Times tables (pick one or more)</label>
+          <div class="pill-group" id="testnum-pills"></div>
         </div>
+      </div>
+
+      <div class="row">
         <div class="field">
-          <label class="field-label">Number of questions</label>
-          <div class="pill-group" id="count-pills">
-            <div class="pill" data-count="5">5</div>
-            <div class="pill active" data-count="10">10</div>
-            <div class="pill" data-count="15">15</div>
-            <div class="pill" data-count="20">20</div>
-            <div class="pill" data-count="30">30</div>
-            <div class="pill" data-count="50">50</div>
-          </div>
+          <label class="field-label">Questions per page (columns × rows)</label>
+          <div class="pill-group" id="grid-pills"></div>
+          <div class="grid-hint" id="grid-hint"></div>
         </div>
       </div>
 
@@ -394,18 +399,26 @@
 const OP_META = {
   add: {symbol:'+', name:'Addition', numLabel:'Numbers up to'},
   sub: {symbol:'−', name:'Subtraction', numLabel:'Numbers up to'},
-  mul: {symbol:'×', name:'Multiplication', numLabel:'Times table number'},
-  div: {symbol:'÷', name:'Division', numLabel:'Divide-by number'}
+  mul: {symbol:'×', name:'Multiplication', numLabel:'Times tables (pick one or more)'},
+  div: {symbol:'÷', name:'Division', numLabel:'Divide by (pick one or more)'}
 };
+
+// [columns, rows] layouts that fit one A4 page
+const GRID_PRESETS = [[2,4],[3,4],[3,5],[4,5],[4,6],[5,6],[5,7],[5,8],[6,8]];
 
 let state = {
   op: 'mul',
-  testNumber: 7,
-  count: 10,
+  testNumber: 10,        // add/sub: "numbers up to"
+  testNumbers: [7],      // mul/div: one or more tables
+  cols: 3,
+  rows: 4,
   questions: [],
   graded: false,
-  format: 'stacked'
+  format: 'stacked',
+  layout: {cols:3, rows:4}
 };
+
+function isMulti(){ return state.op === 'mul' || state.op === 'div'; }
 
 // ---------- Operation tiles ----------
 document.querySelectorAll('.op-tile').forEach(tile=>{
@@ -413,90 +426,139 @@ document.querySelectorAll('.op-tile').forEach(tile=>{
     document.querySelectorAll('.op-tile').forEach(t=>t.classList.remove('active'));
     tile.classList.add('active');
     state.op = tile.dataset.op;
+    if(!isMulti()) state.testNumber = 10;
     renderTestNumberField();
   });
 });
 
-function renderTestNumberField(){
-  const meta = OP_META[state.op];
-  const field = document.getElementById('field-testnum');
-  const label = document.getElementById('testnum-label');
-  const pillsWrap = document.getElementById('testnum-pills');
-  label.textContent = meta.numLabel;
+function testLabel(){
+  if(!isMulti()) return state.testNumber;
+  const nums = [...state.testNumbers].sort((x,y)=>x-y);
+  return nums.length === 12 ? '1–12' : nums.join(', ');
+}
 
-  if(state.op === 'add' || state.op === 'sub'){
+function renderTestNumberField(){
+  const pillsWrap = document.getElementById('testnum-pills');
+  document.getElementById('testnum-label').textContent = OP_META[state.op].numLabel;
+
+  if(!isMulti()){
     const opts = [10,20,50,100,1000,10000];
-    pillsWrap.innerHTML = opts.map((n,i)=>
-      `<div class="pill ${i===0?'active':''}" data-testnum="${n}">${n.toLocaleString()}</div>`).join('');
-    state.testNumber = opts[0];
-    field.classList.remove('hidden');
-  } else {
-    const opts = Array.from({length:12},(_,i)=>i+1);
     pillsWrap.innerHTML = opts.map(n=>
-      `<div class="pill ${n===7?'active':''}" data-testnum="${n}">${n}</div>`).join('');
-    state.testNumber = 7;
-    field.classList.remove('hidden');
+      `<div class="pill ${n===state.testNumber?'active':''}" data-testnum="${n}">${n.toLocaleString()}</div>`).join('');
+    pillsWrap.querySelectorAll('.pill').forEach(p=>{
+      p.addEventListener('click', ()=>{
+        state.testNumber = parseInt(p.dataset.testnum,10);
+        renderTestNumberField();
+      });
+    });
+    return;
   }
+
+  const nums = Array.from({length:12},(_,i)=>i+1);
+  const allOn = state.testNumbers.length === 12;
+  pillsWrap.innerHTML = nums.map(n=>
+    `<div class="pill ${state.testNumbers.includes(n)?'active':''}" data-testnum="${n}">${n}</div>`).join('')
+    + `<div class="pill ${allOn?'active':''}" data-all="1">All</div>`;
   pillsWrap.querySelectorAll('.pill').forEach(p=>{
     p.addEventListener('click', ()=>{
-      pillsWrap.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
-      p.classList.add('active');
-      state.testNumber = parseInt(p.dataset.testnum,10);
+      if(p.dataset.all){
+        state.testNumbers = allOn ? [7] : nums.slice();
+      } else {
+        const n = parseInt(p.dataset.testnum,10);
+        if(state.testNumbers.includes(n)){
+          if(state.testNumbers.length === 1) return; // keep at least one selected
+          state.testNumbers = state.testNumbers.filter(x=>x!==n);
+        } else {
+          state.testNumbers = [...state.testNumbers, n];
+        }
+      }
+      renderTestNumberField();
     });
   });
 }
 renderTestNumberField();
 
-document.getElementById('count-pills').querySelectorAll('.pill').forEach(p=>{
-  p.addEventListener('click', ()=>{
-    document.querySelectorAll('#count-pills .pill').forEach(x=>x.classList.remove('active'));
-    p.classList.add('active');
-    state.count = parseInt(p.dataset.count,10);
+function renderGridPills(){
+  const wrap = document.getElementById('grid-pills');
+  wrap.innerHTML = GRID_PRESETS.map(([c,r])=>
+    `<div class="pill ${c===state.cols&&r===state.rows?'active':''}" data-cols="${c}" data-rows="${r}">${c} × ${r}</div>`).join('');
+  wrap.querySelectorAll('.pill').forEach(p=>{
+    p.addEventListener('click', ()=>{
+      state.cols = parseInt(p.dataset.cols,10);
+      state.rows = parseInt(p.dataset.rows,10);
+      renderGridPills();
+    });
   });
-});
+  document.getElementById('grid-hint').textContent =
+    `${state.cols} columns × ${state.rows} rows = ${state.cols*state.rows} questions, sized to fit one A4 page`;
+}
+renderGridPills();
 
 // ---------- Question generation ----------
 function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
 
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = randInt(0,i);
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function makeAddSub(){
+  if(state.op === 'add'){
+    const a = randInt(1, state.testNumber), b = randInt(1, state.testNumber);
+    return {a,b,answer:a+b,key:`${a}+${b}`};
+  }
+  const a = randInt(2, Math.max(2, state.testNumber));
+  const b = randInt(1, a-1);
+  return {a,b,answer:a-b,key:`${a}-${b}`};
+}
+
 function generateQuestions(){
+  const count = state.cols * state.rows;
   const qs = [];
+
+  if(isMulti()){
+    // Every (table, 1..12) combination goes in a shuffled bag so the selected
+    // tables are evenly mixed; the bag is refilled if more questions are needed.
+    const pool = [];
+    state.testNumbers.forEach(n=>{ for(let m=1;m<=12;m++) pool.push([n,m]); });
+    let bag = [];
+    while(qs.length < count){
+      if(!bag.length) bag = shuffle(pool.slice());
+      const [n,m] = bag.pop();
+      qs.push(state.op === 'mul' ? {a:n,b:m,answer:n*m} : {a:n*m,b:n,answer:m});
+    }
+    return qs;
+  }
+
   const seen = new Set();
   let guard = 0;
-  while(qs.length < state.count && guard < state.count*30){
+  while(qs.length < count && guard < count*30){
     guard++;
-    let a,b,answer,key;
-    if(state.op === 'add'){
-      a = randInt(1, state.testNumber);
-      b = randInt(1, state.testNumber);
-      answer = a+b;
-      key = `${a}+${b}`;
-    } else if(state.op === 'sub'){
-      a = randInt(2, state.testNumber < 2 ? 2 : state.testNumber);
-      b = randInt(1, a-1);
-      answer = a-b;
-      key = `${a}-${b}`;
-    } else if(state.op === 'mul'){
-      a = state.testNumber;
-      b = randInt(1,12);
-      answer = a*b;
-      key = `${a}x${b}`;
-    } else {
-      b = state.testNumber;
-      const q = randInt(1,12);
-      a = b*q;
-      answer = q;
-      key = `${a}div${b}`;
-    }
-    if(seen.has(key) && state.count <= 12) continue; // avoid dup only when pool small
-    seen.add(key);
-    qs.push({a,b,answer});
+    const q = makeAddSub();
+    if(seen.has(q.key)) continue;
+    seen.add(q.key);
+    qs.push({a:q.a,b:q.b,answer:q.answer});
+  }
+  while(qs.length < count){ // small pools: allow repeats rather than a short sheet
+    const q = makeAddSub();
+    qs.push({a:q.a,b:q.b,answer:q.answer});
   }
   return qs;
+}
+
+// Shrink text as the page gets denser (stacked packs more columns than inline)
+function layoutScale(cols, rows, format){
+  const colBase = format === 'stacked' ? 3.2 : 2.1;
+  return Math.min(1, colBase/cols, 4.6/rows);
 }
 
 // ---------- Generate button ----------
 document.getElementById('btn-generate').addEventListener('click', ()=>{
   state.questions = generateQuestions();
+  state.layout = {cols:state.cols, rows:state.rows};
   state.graded = false;
   renderWorksheet();
   showView('worksheet');
@@ -532,7 +594,7 @@ function questionHtml(q, i, sym){
 
 function renderWorksheet(){
   const meta = OP_META[state.op];
-  const titleText = `${meta.name} Practice — ${meta.symbol}${state.op==='mul'||state.op==='div' ? state.testNumber : ''}`;
+  const titleText = `${meta.name} Practice — ${meta.symbol}${isMulti() ? testLabel() : ''}`;
   document.getElementById('ws-title').textContent = titleText;
   const today = new Date();
   document.getElementById('ws-date').value = today.toLocaleDateString();
@@ -543,6 +605,9 @@ function renderWorksheet(){
 
   const grid = document.getElementById('q-grid');
   grid.classList.toggle('stacked', state.format === 'stacked');
+  grid.style.setProperty('--cols', state.layout.cols);
+  grid.style.setProperty('--rows', state.layout.rows);
+  grid.style.setProperty('--s', layoutScale(state.layout.cols, state.layout.rows, state.format).toFixed(3));
   grid.innerHTML = state.questions.map((q,i)=> questionHtml(q, i, sym)).join('');
   document.getElementById('score-banner-wrap').innerHTML = '';
 }
@@ -605,7 +670,7 @@ document.getElementById('btn-check').addEventListener('click', async ()=>{
     name: document.getElementById('ws-name').value || 'Unnamed',
     op: state.op,
     opName: meta.name,
-    testNumber: state.testNumber,
+    testNumber: testLabel(),
     total,
     correctCount,
     pct,
@@ -800,13 +865,8 @@ document.getElementById('learn-to-practice').addEventListener('click', ()=>{
     t.classList.toggle('active', t.dataset.op === learnState.op);
   });
   state.op = learnState.op;
+  state.testNumbers = [learnState.number];
   renderTestNumberField();
-  const targetPill = document.querySelector(`#testnum-pills .pill[data-testnum="${learnState.number}"]`);
-  if(targetPill){
-    document.querySelectorAll('#testnum-pills .pill').forEach(p=>p.classList.remove('active'));
-    targetPill.classList.add('active');
-    state.testNumber = learnState.number;
-  }
   showView('setup');
 });
 </script>
